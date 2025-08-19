@@ -1,4 +1,4 @@
-#Goal for this workflow: verify every change integrates cleanly
+# Goal for this workflow: verify every change integrates cleanly
 
 name: ci
 
@@ -25,6 +25,8 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,7 +36,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: mlops-week2/api:latest
+          tags: mlops-week2/api:latest 
 
 
 
