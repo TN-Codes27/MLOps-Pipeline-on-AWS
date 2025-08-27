@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 app = FastAPI(title="mlops-api", version="0.1.0")
 
 @app.get("/health")
