@@ -1,1 +1,3 @@
 ![CI](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/ci.yml/badge.svg)
+![build-and-push-ecr](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/build-push.yml/badge.svg)
+
