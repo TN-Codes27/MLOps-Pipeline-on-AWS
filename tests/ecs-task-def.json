@@ -1,0 +1,22 @@
+{
+  "family": "mlops-api-task",
+  "executionRoleArn": "arn:aws:iam::022835649155:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "mlops-api",
+      "image": "<IMAGE_PLACEHOLDER>", 
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
+}
