@@ -1,3 +1,10 @@
 ![CI](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/ci.yml/badge.svg)
 ![build-and-push-ecr](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/build-push.yml/badge.svg)
 
+How to Deploy: 
+1. Push to main (or run the Deploy workflow manually).
+2. CI builds Docker image → pushes to ECR.
+3. Deploy job renders task def with the new image and updates ECS service.
+4. ECS rolls out the new task behind the ALB.
+5. Health check: curl http://<ALB-DNS>/health → {"status":"ok"}
+
