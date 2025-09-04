@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from schemas import PredictIn, PredictOut
+from .schemas import PredictIn, PredictOut
 
 app = FastAPI(title="mlops-api", version="0.1.0")
 
