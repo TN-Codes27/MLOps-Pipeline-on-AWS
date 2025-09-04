@@ -1,5 +1,6 @@
 ![CI](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/ci.yml/badge.svg)
 ![build-and-push-ecr](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/build-push.yml/badge.svg)
+![Deploy](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/deploy.yml/badge.svg)
 
 How to Deploy: 
 1. Push to main (or run the Deploy workflow manually).
