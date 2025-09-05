@@ -46,11 +46,20 @@ jobs:
             API_KEY=${{ secrets.API_KEY }}
 
       - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        timeout-minutes: 15
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: mlops-api-task-service
           cluster: mlops-cluster1
           wait-for-service-stability: true
+          force-new-deployment: true
+      - name: Wait for ECS service to be stable (CLI)
+        run: |
+          aws ecs wait services-stable \
+            --cluster mlops-cluster1 \
+            --services mlops-api-task-service
+        timeout-minutes: 10
+
 
       
