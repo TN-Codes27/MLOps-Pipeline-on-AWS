@@ -9,3 +9,16 @@ How to Deploy:
 4. ECS rolls out the new task behind the ALB.
 5. Health check: curl http://<ALB-DNS>/health → {"status":"ok"}
 
+
+## Model Training
+
+- Dataset: [Iris Dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#iris-plants-dataset)
+- Model: Logistic Regression (`sklearn.linear_model.LogisticRegression`)
+- Train/Test Split: 80/20
+- Test Accuracy: ~100% (expected on this dataset)
+- Model Artifact: [`model/model.joblib`](model/model.joblib)
+
+```bash
+python services/training/train.py
+
+
