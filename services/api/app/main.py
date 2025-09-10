@@ -37,8 +37,8 @@ def predict(payload: PredictIn) -> PredictOut:
         idx = int(model.predict(X)[0])
         if not (0 <= idx < len(LABELS)):
             raise ValueError(f"class index {idx} out of range")
-        labels = ["setosa", "versicolor", "virginica"]
-        return PredictOut(prediction_index=idx, prediction_label=labels[idx])
+        return PredictOut(prediction_index=idx, prediction_label=LABELS[idx])
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Prediction failed: {e}")
 
