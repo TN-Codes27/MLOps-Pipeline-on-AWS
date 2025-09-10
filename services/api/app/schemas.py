@@ -1,8 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 class PredictIn(BaseModel):
-    feature1: float
-    feature2: float
+    sepal_length: float = Field(description="Length of the sepal")
+    sepal_width: float = Field(description="Width of the sepal")
+    petal_length: float = Field(description="Length of the petal")
+    petal_width: float = Field(description="Width of the petal")
+
+    model_config = ConfigDict(populate_by_name=True)
 
 class PredictOut(BaseModel):
-    prediction: float
+    prediction_index: int
+    prediction_label: str
