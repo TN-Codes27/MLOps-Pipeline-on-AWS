@@ -9,3 +9,5 @@ COPY model/model.joblib ./model/model.joblib
 # Expose & run
 EXPOSE 8080
 CMD ["python", "-m", "uvicorn", "services.api.app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+ARG GIT_SHA=dev
+ENV GIT_SHA=$GIT_SHA

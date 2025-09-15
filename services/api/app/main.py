@@ -47,5 +47,11 @@ def force_500() -> dict[str, str]:
     # Deliberately create a server error for monitoring tests
     raise HTTPException(status_code=500, detail="forced 500 for monitoring test")
 
+import os
+@app.get("/version")
+def version() -> dict[str, str]:
+    return {"git_sha": os.getenv("GIT_SHA", "dev")}
+
+
 
 
