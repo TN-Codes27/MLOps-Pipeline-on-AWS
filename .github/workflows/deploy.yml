@@ -67,7 +67,12 @@ jobs:
         env:
           ALB_URL: ${{ secrets.ALB_URL }}  
         run: |
-          ./scripts/smoke_predict.ps1 -AlbUrl "$env:ALB_URL"
+          Write-Host "Workspace: $PWD"
+          Write-Host "Listing repo files to verify path:"
+          Get-ChildItem -Recurse | Select-Object FullName
+
+          # Run the script with the call operator
+          & ./scripts/smoke_predict.ps1 -AlbUrl "$env:ALB_URL"
 
 
 

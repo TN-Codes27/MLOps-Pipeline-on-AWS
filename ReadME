@@ -1,35 +1,89 @@
+# MLOps Pipeline on AWS (Iris Classifier)
+
+
 ![CI](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/ci.yml/badge.svg)
 ![build-and-push-ecr](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/build-push.yml/badge.svg)
 ![Deploy](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/deploy.yml/badge.svg)
 
-How to Deploy: 
-1. Push to main (or run the Deploy workflow manually).
-2. CI builds Docker image → pushes to ECR.
-3. Deploy job renders task def with the new image and updates ECS service.
-4. ECS rolls out the new task behind the ALB.
-5. Health check: curl http://<ALB-DNS>/health → {"status":"ok"}
+## Overview
+
+This repo trains and deploys a simple **Iris flower classifier** using:
+- **FastAPI** for serving predictions
+- **AWS ECS Fargate** for containerized deployment
+- **Application Load Balancer** for traffic routing
+- **GitHub Actions** for CI/CD (build, push, deploy)
+
+## Architecture
+Client -> ALB -> ECS Service (mlops-api-task-service) -> FastAPI app -> model.joblib
+|
+CloudWatch Logs + Dashboard (CPU/Mem/5xx)
 
 
-## Model Training
+## Endpoints
 
-- Dataset: [Iris Dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#iris-plants-dataset)
-- Model: Logistic Regression (`sklearn.linear_model.LogisticRegression`)
-- Train/Test Split: 80/20
-- Test Accuracy: ~100% (expected on this dataset)
-- Model Artifact: [`model/model.joblib`](model/model.joblib)
+- **GET** `/health` → `{"status":"ok","service":"api","version":"0.1.0"}`
+- **POST** `/predict` → `{"prediction_index": int, "prediction_label": "setosa|versicolor|virginica"}`
 
-```bash
-python services/training/train.py
-
-##  predict Endpoint
-
-- FastAPI app loads `model/model.joblib` at startup.
-- `/predict` accepts JSON with 4 floats and returns class index + label.
-- Example:
+## Sample Request
 
 ```bash
-curl -X POST http://127.0.0.1:8000/predict \
+curl -X POST http://<ALB-DNS>/predict \
   -H "Content-Type: application/json" \
   -d '{"sepal_length":5.1,"sepal_width":3.5,"petal_length":1.4,"petal_width":0.2}'
+
+
+## Local Development
+python -m venv .venv
+source .venv/bin/activate   # (or .venv\Scripts\Activate.ps1 on Windows)
+pip install -r requirements.txt
+
+# Train model
+python services/training/train.py
+
+# Run API
+python -m uvicorn services.api.main:app --reload
+
+
+# Train model
+python services/training/train.py
+
+# Run API
+python -m uvicorn services.api.main:app --reload
+
+
+###I/CD Pipeline
+
+Push to main → GitHub Actions:
+
+Run tests (pytest)
+
+Build & push Docker image to ECR
+
+Update ECS task definition + deploy service
+
+Run smoke test against ALB → fail fast if unhealthy
+
+###Monitoring
+
+CloudWatch Logs: /ecs/mlops-api-task
+
+CloudWatch Dashboard: includes CPU %, memory, ALB requests
+
+Alarms:
+
+CPU > 70% (ECS service)
+
+Target 5xx errors (ALB)
+
+###Roadmap
+
+Week 4: MLflow tracking + automated retraining
+
+Week 5: Infrastructure as Code (Terraform)
+
+Week 6: Auto-scaling & alarms polish
+
+Week 7: Secrets → SSM Parameter Store
+
 
 
