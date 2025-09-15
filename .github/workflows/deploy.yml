@@ -54,12 +54,23 @@ jobs:
           cluster: mlops-cluster1
           wait-for-service-stability: true
           force-new-deployment: true
+
       - name: Wait for ECS service to be stable (CLI)
         run: |
           aws ecs wait services-stable \
             --cluster mlops-cluster1 \
             --services mlops-api-task-service
         timeout-minutes: 10
+
+      - name: Smoke test /predict via ALB
+        shell: pwsh
+        env:
+          ALB_URL: ${{ secrets.ALB_URL }}  
+        run: |
+          ./scripts/smoke_predict.ps1 -AlbUrl "$env:ALB_URL"
+
+
+
 
 
       
