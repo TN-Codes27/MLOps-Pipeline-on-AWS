@@ -25,7 +25,7 @@ except Exception as e:
 
 
 @app.get("/health")
-def health():
+def health() -> dict[str, str]:
     return {"status": "ok", "service": "api", "version": "0.1.0"}
 
 

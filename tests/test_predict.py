@@ -5,7 +5,7 @@ from services.api.app.main import app
 client = TestClient(app)
 
 
-def test_health_ok():
+def test_health_ok() -> None:
     r = client.get("/health")
     assert r.status_code == 200
     body = r.json()
@@ -13,7 +13,7 @@ def test_health_ok():
     assert body["service"] == "api"
 
 
-def test_predict_ok():
+def test_predict_ok() -> None:
     payload = {
         "sepal_length": 5.1,
         "sepal_width": 3.5,
@@ -27,12 +27,12 @@ def test_predict_ok():
     assert body["prediction_label"] in {"setosa", "versicolor", "virginica"}
 
 
-def test_predict_validation():
+def test_predict_validation() -> None:
     r = client.post("/predict", json={"sepal_length": 5.1})  # missing fields
     assert r.status_code == 422
 
 
-def test_predict_bad_type():
+def test_predict_bad_type() -> None:
     # string instead of float -> pydantic should be 422
     r = client.post(
         "/predict",
@@ -46,7 +46,7 @@ def test_predict_bad_type():
     assert r.status_code == 422
 
 
-def test_predict_extra_field_current_behaviour():
+def test_predict_extra_field_current_behaviour() -> None:
     # pydantic ignores extra fields by default
     r = client.post(
         "/predict",

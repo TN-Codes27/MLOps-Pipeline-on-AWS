@@ -4,3 +4,4 @@ ruff
 black
 mypy
 pytest-cov
+types-requests

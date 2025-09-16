@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import os
+from typing import Final, Optional
 
-from services.api import app
+from dotenv import load_dotenv
 
-API_KEY = os.getenv("API_KEY", "missing")
+load_dotenv()  # reads .env in project root, if present
 
-
-@app.get("/config")
-def get_config():
-    return {"api_key": API_KEY}
+API_KEY: Optional[str] = os.getenv("API_KEY")
+MODEL_PATH: Final[str] = os.getenv("MODEL_PATH", "model/model.joblib")
