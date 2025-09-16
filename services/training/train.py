@@ -7,16 +7,17 @@ from pathlib import Path
 
 import joblib
 import mlflow
-import mlflow.sklearn  # MLflow: sklearn flavor
+import mlflow.sklearn
 import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score, train_test_split
 
-# ========= MLflow setup (you already had this; good!) =========
-mlflow.set_tracking_uri("file:./mlruns")
-mlflow.set_experiment("local-dev")
+# ========= MLflow setup  =========
+
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_experiment("s3-dev")  # new experiment name
 
 
 def train_and_save(
