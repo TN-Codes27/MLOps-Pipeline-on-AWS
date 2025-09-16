@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
 
 class PredictIn(BaseModel):
     sepal_length: float = Field(description="Length of the sepal")
@@ -8,8 +9,7 @@ class PredictIn(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
+
 class PredictOut(BaseModel):
     prediction_index: int
     prediction_label: str
-
- 

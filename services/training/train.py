@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import os
+
 import joblib
 import numpy as np
 from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import cross_val_score, train_test_split
 
 
 def train_and_save(model_path: str = "model/model.joblib") -> dict:
@@ -53,7 +54,10 @@ def train_and_save(model_path: str = "model/model.joblib") -> dict:
 
     # 6) Sanity check load
     loaded = joblib.load(model_path)
-    print("Sanity check prediction (class index):", loaded["model"].predict([X_test[0]])[0])
+    print(
+        "Sanity check prediction (class index):",
+        loaded["model"].predict([X_test[0]])[0],
+    )
 
     return {"accuracy": acc, "cv_mean": float(cv_scores.mean())}
 

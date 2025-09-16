@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException
-from .schemas import PredictIn, PredictOut
-import numpy as np
-import joblib
-from typing import Final, Any, Dict, List
+import os
+from typing import Any, List
 
+import joblib
+import numpy as np
+from fastapi import FastAPI, HTTPException
+
+from .schemas import PredictIn, PredictOut
 
 app = FastAPI(title="mlops-api", version="0.1.0")
 
@@ -26,14 +28,21 @@ except Exception as e:
 def health():
     return {"status": "ok", "service": "api", "version": "0.1.0"}
 
+
 @app.post("/predict", response_model=PredictOut)
 def predict(payload: PredictIn) -> PredictOut:
     try:
-        X = np.array([[payload.sepal_length,
-                       payload.sepal_width,
-                       payload.petal_length,
-                       payload.petal_width, 
-                       ]], dtype=float)
+        X = np.array(
+            [
+                [
+                    payload.sepal_length,
+                    payload.sepal_width,
+                    payload.petal_length,
+                    payload.petal_width,
+                ]
+            ],
+            dtype=float,
+        )
         idx = int(model.predict(X)[0])
         if not (0 <= idx < len(LABELS)):
             raise ValueError(f"class index {idx} out of range")
@@ -42,16 +51,13 @@ def predict(payload: PredictIn) -> PredictOut:
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Prediction failed: {e}")
 
+
 @app.get("/force-500")
 def force_500() -> dict[str, str]:
     # Deliberately create a server error for monitoring tests
     raise HTTPException(status_code=500, detail="forced 500 for monitoring test")
 
-import os
+
 @app.get("/version")
 def version() -> dict[str, str]:
     return {"git_sha": os.getenv("GIT_SHA", "dev")}
-
-
-
-
