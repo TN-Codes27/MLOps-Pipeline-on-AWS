@@ -14,13 +14,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score, train_test_split
 
-# ========= MLflow setup  =========
-
+# ========= MLflow setup =========
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
-mlflow.set_experiment("s3-dev")  # new experiment name
-is_ci = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
-mlflow.log_param("ci_run", bool(is_ci))  # shows True for CI, False locally
-mlflow.set_tags({"runner": "github-actions" if is_ci else "local"})
+mlflow.set_experiment("s3-dev")  # experiment on the server
 
 
 def train_and_save(
@@ -47,20 +43,28 @@ def train_and_save(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
 
-    # ---- MLflow: Start a run & log parameters up front ----
-    # Keeping run_name helpful for the UI:
+    # ---- MLflow: ensure clean state, then start a run ----
+    if mlflow.active_run() is not None:
+        mlflow.end_run()
+
     run_name = f"logreg-{int(time.time())}"
     with mlflow.start_run(run_name=run_name) as run:
-        # Params we care about (add more if you change solver/penalty later)
+        # Mark CI vs local (log AFTER the run has started)
+        is_ci = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
+        mlflow.log_param("ci_run", bool(is_ci))
+        mlflow.set_tags({"runner": "github-actions" if is_ci else "local"})
+
+        # Params we care about
         params = {
             "model_type": "LogisticRegression",
             "max_iter": max_iter,
             "test_size": test_size,
             "random_state": random_state,
             "cv_folds": cv_folds,
+            "dataset": "iris",
+            "stage": "dev",
         }
         mlflow.log_params(params)
-        mlflow.set_tags({"stage": "dev", "dataset": "iris"})
 
         # 3) Train
         model = LogisticRegression(max_iter=max_iter)
@@ -77,10 +81,10 @@ def train_and_save(
         print("Cross-validation scores:", cv_scores)
         print("Mean CV accuracy:", cv_mean)
 
-        # ---- MLflow: Log metrics ----
+        # ---- MLflow: metrics ----
         mlflow.log_metrics({"accuracy": float(acc), "cv_mean": cv_mean})
 
-        # 5) Save model + metadata (your original)
+        # 5) Save model + metadata (joblib bundle)
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         artifact = {
             "model": model,
@@ -90,31 +94,29 @@ def train_and_save(
         joblib.dump(artifact, model_path)
         print(f" Saved model to {model_path}")
 
-        # ---- MLflow: Log artifacts (files) ----
-        # Save params/metrics as JSON for easier browsing
+        # ---- MLflow: artifacts (files) ----
         Path("artifacts").mkdir(exist_ok=True)
         with open("artifacts/params.json", "w") as f:
             json.dump(params, f, indent=2)
         with open("artifacts/metrics.json", "w") as f:
             json.dump({"accuracy": float(acc), "cv_mean": cv_mean}, f, indent=2)
 
-        # Log all three: params.json, metrics.json, and the joblib model
         mlflow.log_artifact("artifacts/params.json")
         mlflow.log_artifact("artifacts/metrics.json")
         mlflow.log_artifact(model_path, artifact_path="model_joblib")
 
-        # ---- MLflow: (Bonus) log sklearn model in MLflow format ----
-        # This creates an MLmodel with environment files for reproducibility.
+        # ---- MLflow: sklearn model in MLflow format ----
         try:
+            # If your MLflow version warns about artifact_path, keep this as-is for now.
             mlflow.sklearn.log_model(sk_model=model, artifact_path="model_sklearn")
         except Exception as e:
             print(f"[MLflow] sklearn log_model skipped: {e}")
 
-        # Optional: print run info for quick copy/paste
+        # Debug info
         print(f"[MLflow] run_id={run.info.run_id}")
         print(f"[MLflow] artifact_uri={mlflow.get_artifact_uri()}")
 
-        # 6) Sanity check load (kept from your original)
+        # 6) Sanity check load
         loaded = joblib.load(model_path)
         print(
             "Sanity check prediction (class index):",
