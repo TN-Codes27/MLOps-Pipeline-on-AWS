@@ -15,7 +15,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score, train_test_split
 
 # ========= MLflow setup =========
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("s3-dev")  # experiment on the server
 
 
