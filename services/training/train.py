@@ -113,6 +113,13 @@ def train_and_save(
             print(f"[MLflow] sklearn log_model skipped: {e}")
 
         # Debug info
+        tracking_uri = os.getenv("MLFLOW_TRACKING_URI")
+        if tracking_uri:
+            mlflow.set_tracking_uri(tracking_uri)
+            mlflow.set_experiment("s3-dev")
+        else:
+            print("[MLflow] No tracking URI set, skipping experiment logging.")
+
         print(f"[MLflow] run_id={run.info.run_id}")
         print(f"[MLflow] artifact_uri={mlflow.get_artifact_uri()}")
 
