@@ -18,6 +18,9 @@ from sklearn.model_selection import cross_val_score, train_test_split
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("s3-dev")  # new experiment name
+is_ci = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
+mlflow.log_param("ci_run", bool(is_ci))  # shows True for CI, False locally
+mlflow.set_tags({"runner": "github-actions" if is_ci else "local"})
 
 
 def train_and_save(

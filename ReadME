@@ -5,6 +5,7 @@
 ![build-and-push-ecr](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/build-push.yml/badge.svg)
 ![Deploy](https://github.com/TN-Codes27/MLOps-Pipeline-on-AWS/actions/workflows/deploy.yml/badge.svg)
 
+![CI run example](docs/images/mlflow-ci-run.png)
 ## Overview
 
 This repo trains and deploys a simple **Iris flower classifier** using:
@@ -30,6 +31,7 @@ CloudWatch Logs + Dashboard (CPU/Mem/5xx)
 curl -X POST http://<ALB-DNS>/predict \
   -H "Content-Type: application/json" \
   -d '{"sepal_length":5.1,"sepal_width":3.5,"petal_length":1.4,"petal_width":0.2}'
+  ```
 
 
 ## Local Development
@@ -50,8 +52,7 @@ python services/training/train.py
 # Run API
 python -m uvicorn services.api.main:app --reload
 
-
-###I/CD Pipeline
+### I/CD Pipeline
 
 Push to main → GitHub Actions:
 
@@ -75,9 +76,10 @@ CPU > 70% (ECS service)
 
 Target 5xx errors (ALB)
 
-###Roadmap
+### Roadmap
 
 Week 4: MLflow tracking + automated retraining
+CI workflow runs `train.py` and logs to MLflow server with artifacts in S3.
 
 Week 5: Infrastructure as Code (Terraform)
 
